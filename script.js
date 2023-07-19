@@ -1,8 +1,10 @@
 //Initial Functions
-let handleClick = function(e) {
+const handleClick = function(e) {
     buttonValue = e.target.id
-    if(operators.test(buttonValue)) lastOperator = buttonValue;
-    if(/\d+/.test(buttonValue)) {
+    if(operators.test(buttonValue)) {
+        lastOperator = buttonValue;
+        number2 = ""}
+    if(/[.\d]+/.test(buttonValue)) {
         if(lastOperator === "") number1 += buttonValue;
         else number2 += buttonValue;
     }
@@ -14,13 +16,10 @@ let handleClick = function(e) {
         lastOperator = ""}
 
     else if (buttonValue === '=') {
-        display.textContent = operate(number1, lastOperator, number2);
-        number1 = ""
-        number2 = ""
-        lastOperator = ""  
+        result = operate(Number(number1), lastOperator, Number(number2));
+        display.textContent = result
+        number1 = String(result)
     }
-
-    console.log(lastOperator)
 }
 
 //script
@@ -43,7 +42,8 @@ const subtract = (number1, number2) => number1 - number2;
 const multiply = (number1, number2) => number1 * number2;
 
 const divide = (number1, number2) => {
-    if(number2 == 0) return "Don't divide by 0!";
+    console.log(number1,number2)
+    if(number2 == 0 || number2 == null) return "Don't divide by 0!";
     else return number1 / number2
 }
 
