@@ -1,0 +1,29 @@
+div {
+    max-width: 200px;
+}
+
+#display {
+    height: 40px;
+    text-align: end;
+    max-width: 160px;
+    background-color: lightgray;
+}
+
+.button-row {
+    display: flex;
+    gap: 2px;
+    height: 40px;
+    max-width: 160px;
+    margin: 2px 0px;
+}
+
+.button {
+    text-align: center;
+    flex: 1;
+    background-color: orange;
+    border-radius: 3px;    
+}
+
+.big {
+    flex: 0 0 79px;
+}
