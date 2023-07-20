@@ -55,9 +55,12 @@ const divide = (number1, number2) => {
 const exponent = (base,power) => base ** power;
 
 const factorial = (number) => {
-    let multipliers = Array.from(Array(number).keys(), value => value += 1); //create array [1,2,...,number]
-    return multipliers.reduce((total, current) => total * (current), 1);
-  };
+	let total = 1
+  for (i = number; i > 1; i--) {
+    total *= i
+  }
+  return total
+};
 
 const operate = (number1, operator, number2) => {
     console.log(number1, operator, number2)
@@ -112,9 +115,15 @@ const simplifyEquation = (index) => {
     let operator = equation[index];
     let number1 = equation[index - 1];
     let number2 = equation[index + 1];
-    let operationResult = operate(number1, operator, number2)
-    let numberToDelete = operator === '!' ? 2 : 3 //delete 2 values if we're doing factorial, 3 otherwise
-    equation.splice(index-1, numberToDelete, String(operationResult));
+    //delete and use 2 values if we're doing factorial, 3 otherwise
+    if (operator === '!') {
+        let operationResult = operate(number1, operator);
+        equation.splice(index-1, 2, String(operationResult));
+    } 
+    else {
+        let operationResult = operate(number1, operator, number2)
+        equation.splice(index-1, 3, String(operationResult));
+    }
     console.log(equation);
 }
 
