@@ -1,48 +1,53 @@
 //Initial Functions
 const handleClick = function(e) {
     buttonValue = e.target.id
-    if(operators.test(buttonValue)) {
-        lastOperator = buttonValue;
-        number2 = ""}
-    if(/[.\d]+/.test(buttonValue)) {
-        if(lastOperator === "") number1 += buttonValue;
-        else number2 += buttonValue;
-    }
-    display.textContent += buttonValue;
+
     if (buttonValue === 'AC') {
         display.textContent = "";
-        number1 = ""
-        number2 = ""
-        lastOperator = ""}
-
-    else if (buttonValue === '=') {
-        result = operate(Number(number1), lastOperator, Number(number2));
-        display.textContent = result
-        number1 = String(result)
+        equation = [];
+        return;
     }
+
+    if (buttonValue === '=') {
+        console.log(...equation);
+        result = evaluate(equation);
+        display.textContent = result
+        return;
+    }
+
+    if(operatorRegex.test(buttonValue)) {
+        equation.push(buttonValue);
+        buttonValue = ' '+buttonValue+' '
+    }
+    if(numberRegex.test(buttonValue)) {
+        if(numberRegex.test(equation[equation.length-1])){
+            equation[equation.length-1] += buttonValue; 
+        }      
+        else equation.push(buttonValue); 
+    }
+    display.textContent += buttonValue;
+
 }
 
 //script
 let display = document.getElementById('display');
 let buttons = document.querySelectorAll('.button');
-let number1 = ""
-let number2 = ""
-let lastOperator = ""
-let operators = /[-x!^+\/]+/
+let operatorRegex = /[-x!^+\/]+/;
+let numberRegex = /[.\d]+/
+let equation = [];
 
 buttons.forEach((button) => button.addEventListener('click', handleClick));
 
 //Calculations
 
 
-const add = (number1, number2) => number1 + number2;
+const add = (number1, number2) => Number(number1) + Number(number2);
 
-const subtract = (number1, number2) => number1 - number2;
+const subtract = (number1, number2) => Number(number1) - Number(number2);
 
 const multiply = (number1, number2) => number1 * number2;
 
 const divide = (number1, number2) => {
-    console.log(number1,number2)
     if(number2 == 0 || number2 == null) return "Don't divide by 0!";
     else return number1 / number2
 }
@@ -55,14 +60,62 @@ const factorial = (number) => {
   };
 
 const operate = (number1, operator, number2) => {
+    console.log(number1, operator, number2)
+    number1 = number1 || null; //support no number1 provided
     number2 = number2 || null; //support no number2 provided
+    operator = operator || null; //support no operator provided
+    if(number1 === null) return '0';
     if(operator === '+') return add(number1, number2);
     if(operator === '-') return subtract(number1, number2);
     if(operator === 'x') return multiply(number1, number2);
     if(operator === '/') return divide(number1, number2);
     if(operator === '^') return exponent(number1, number2);
-    if(operator === '!') return factorial(number1)
+    if(operator === '!') return factorial(number1);
+    if(operator === null) return number1;
 }
 
-//console.log(operate(3,'-',2))
+const evaluate = (equation) => {
+    if (equation.length <= 1) {
+        //console.log(`only ${equation.length} arguments: ${equation} time to return`)
+        return equation[0];
+    }
+    //If there's more than 1 value, we can simplify by using BIDMAS
+    if (equation.indexOf('^') != -1) { //indices first bIdmas
+        simplifyEquation(equation.indexOf('^')); // replaces the operation with it's result
+        return evaluate(equation);
+    }
+    if (equation.indexOf('/') != -1) { //divide next biDmas
+        simplifyEquation(equation.indexOf('/')); 
+        return evaluate(equation);
+    }    
+    if (equation.indexOf('x') != -1) { //multiply next bidMas
+        simplifyEquation(equation.indexOf('x'));
+        return evaluate(equation);
+    }
+    if (equation.indexOf('!') != -1) { //factorial next bidMas (it's a multiply)
+        simplifyEquation(equation.indexOf('!'));
+        return evaluate(equation);
+    }
+    if (equation.indexOf('+') != -1) { //add next bidmAs 
+        simplifyEquation(equation.indexOf('+')); 
+        return evaluate(equation);
+    }
+    if (equation.indexOf('-') != -1) { //subtract last bidmaS 
+        simplifyEquation(equation.indexOf('-')); 
+        return evaluate(equation);
+    }
+    
+}
+
+const simplifyEquation = (index) => {
+    console.log(equation);
+    let operator = equation[index];
+    let number1 = equation[index - 1];
+    let number2 = equation[index + 1];
+    let operationResult = operate(number1, operator, number2)
+    let numberToDelete = operator === '!' ? 2 : 3 //delete 2 values if we're doing factorial, 3 otherwise
+    equation.splice(index-1, numberToDelete, String(operationResult));
+    console.log(equation);
+}
+
 
